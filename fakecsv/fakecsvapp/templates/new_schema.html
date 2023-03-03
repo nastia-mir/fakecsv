@@ -1,0 +1,36 @@
+{% extends 'main.html' %}
+{% block content %}
+
+<h2>New schema</h2>
+
+<form method="POST">
+    {% csrf_token %}
+    {{schema_form.as_p}}
+    <input class="btn btn-primary" name="create_schema" type="submit" value="Submit"/>
+</form>
+
+
+<h2>Schema columns</h2>
+
+{% if columns %}
+{% for column in columns %}
+
+<p>
+    Name {{column.name}}, Type {{column.type}}, Order: {{column.order}}
+    <a href="{% url 'delete column' %}">Delete</a>
+<p>
+
+
+{% endfor %}
+{% endif %}
+
+
+<form method="POST">
+    {% csrf_token %}
+    {{column_form.as_p}}
+    <input class="btn btn-primary" name="add_column" type="submit" value="Add column"/>
+</form>
+
+
+
+{% endblock %}

@@ -1,10 +1,16 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
+from django.core.cache import cache
+from django.contrib import messages
+
 
 from django.shortcuts import render, redirect
 from django.views.generic import View, TemplateView
+from django.views.generic.edit import ProcessFormView
 
-from fakecsvapp.forms import LoginForm
+from fakecsvapp.forms import LoginForm, NewSchemaForm, NewColumnForm
+from fakecsvapp.models import Schema, SchemaColumn
+from fakecsvapp.services import Columns
 
 
 class LoginView(View):
@@ -21,11 +27,7 @@ class LoginView(View):
         if form.is_valid():
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
-
-            user = authenticate(
-                username=username,
-                password=password,
-            )
+            user = authenticate(username=username, password=password,)
             if user is not None:
                 login(request, user)
                 return redirect('home')
@@ -43,3 +45,58 @@ class LogoutView(View):
 
 class HomeView(TemplateView):
     template_name = 'home.html'
+
+
+class NewSchemaView(ProcessFormView):
+    template_name = 'new_schema.html'
+
+    def get(self, request):
+        context = {'schema_form': NewSchemaForm(),
+                   'column_form': NewColumnForm()}
+        draft = cache.get('draft')
+        if not draft:
+            draft, created = Schema.objects.get_or_create(user=request.user, is_draft=True)
+            cache.set('draft', draft, 900)
+        columns = list(SchemaColumn.objects.filter(schema=draft).order_by('order'))
+        if len(columns) != 0:
+            context['columns'] = columns
+        else:
+            context['columns'] = None
+        return render(request, self.template_name, context)
+
+    def post(self, request):
+        schema = cache.get('draft')
+        if not schema:
+            schema = Schema.objects.get(user=request.user, is_draft=True)
+            cache.set('draft', schema, 900)
+        if 'create_schema' in request.POST:
+            form = NewSchemaForm(request.POST)
+            if form.is_valid():
+                schema_form = form.save(commit=False)
+                schema.title = schema_form.title
+                schema.separator = schema_form.separator
+                schema.string_character = schema_form.string_character
+                schema.is_draft = False
+                schema.save()
+                cache.delete('draft')
+                return redirect('home')
+            else:
+                messages.error(request, 'Something went wrong with schema.')
+                return redirect('new schema')
+        elif 'add_column' in request.POST:
+            form = NewColumnForm(request.POST)
+            if form.is_valid():
+                column_form = form.save(commit=False)
+                column_form.schema = schema
+                column_form.order = Columns.normalise_column_orders(schema, column_form.order)
+                column_form.save()
+                return redirect('new schema')
+            else:
+                messages.error(request, 'Something went wrong with new column.')
+                return redirect('new schema')
+        else:
+            messages.error(request, 'Something went wrong.')
+            return redirect('new schema')
+
+
+
