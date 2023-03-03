@@ -5,4 +5,28 @@
 
 <a href="{% url 'new schema' %}">New schema</a>
 
+<table>
+<tr>
+  <th>#</th>
+  <th>Title</th>
+  <th>Modified</th>
+  <th>Actions</th>
+</tr>
+{% for schema,i in schemas %}
+<tr>
+  <th> {{ i }}</th>
+  <th> {{ schema.title }}</th>
+  <th> {{ schema.date_modified }}</th>
+  <th>
+      <p>
+        <a href="{% url 'edit schema' schema.id %}">Edit schema</a>
+      </p>
+    <p>
+      <a href="{% url 'delete schema' schema.id %}">Delete</a>
+    </p>
+  </th>
+</tr>
+{% endfor %}
+</table>
+
 {% endblock %}

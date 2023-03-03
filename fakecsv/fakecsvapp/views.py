@@ -46,9 +46,15 @@ class LogoutView(View):
 class HomeView(TemplateView):
     template_name = 'home.html'
 
+    def get_context_data(self, **kwargs):
+        context = super(HomeView, self).get_context_data()
+        schemas = list(Schema.objects.filter(user=self.request.user).order_by('date_modified'))
+        context['schemas'] = zip(schemas, range(1, len(schemas)+1))
+        return context
+
 
 class NewSchemaView(ProcessFormView):
-    template_name = 'new_schema.html'
+    template_name = 'edit_schema.html'
 
     def get(self, request):
         context = {'schema_form': NewSchemaForm(),
@@ -109,6 +115,64 @@ class DeleteColumnView(View):
             column.save()
         column.delete()
         return redirect('new schema')
+
+
+class DeleteSchemaView(View):
+    def get(self, request, pk):
+        schema = Schema.objects.get(id=pk)
+        schema.delete()
+        return redirect('home')
+
+
+class EditSchemaView(View):
+    template_name = 'edit_schema.html'
+
+    def get(self, request, pk):
+        context = {'schema_form': NewSchemaForm(),
+                   'column_form': NewColumnForm()}
+        schema = cache.get('schema')
+        if not schema:
+            schema = Schema.objects.get(id=pk)
+            cache.set('schema', schema, 900)
+        columns = list(SchemaColumn.objects.filter(schema=schema).order_by('order'))
+        if len(columns) != 0:
+            context['columns'] = columns
+        else:
+            context['columns'] = None
+        return render(request, self.template_name, context)
+
+    def post(self, request, pk):
+        schema = cache.get('schema')
+        if not schema:
+            schema = Schema.objects.get(id=pk)
+            cache.set('draft', schema, 900)
+        if 'create_schema' in request.POST:
+            form = NewSchemaForm(request.POST)
+            if form.is_valid():
+                schema_form = form.save(commit=False)
+                schema.title = schema_form.title
+                schema.separator = schema_form.separator
+                schema.string_character = schema_form.string_character
+                schema.save()
+                cache.delete('schema')
+                return redirect('home')
+            else:
+                messages.error(request, 'Something went wrong with schema.')
+                return redirect('edit schema')
+        elif 'add_column' in request.POST:
+            form = NewColumnForm(request.POST)
+            if form.is_valid():
+                column_form = form.save(commit=False)
+                column_form.schema = schema
+                column_form.order = Columns.normalise_column_orders(schema, column_form.order)
+                column_form.save()
+                return redirect('new schema')
+            else:
+                messages.error(request, 'Something went wrong with new column.')
+                return redirect('edit schema')
+        else:
+            messages.error(request, 'Something went wrong.')
+            return redirect('edit schema')
 
 
 

@@ -9,7 +9,9 @@ urlpatterns = [
 
     path('', login_required(views.HomeView.as_view()), name='home'),
     path('new/', login_required(views.NewSchemaView.as_view()), name='new schema'),
-    path('new/<pk>/delete_column', login_required(views.DeleteColumnView.as_view()), name='delete column')
+    path('new/<pk>/delete_column/', login_required(views.DeleteColumnView.as_view()), name='delete column'),
+    path('<pk>/delete/', login_required(views.DeleteSchemaView.as_view()), name='delete schema'),
+    path('<pk>/edit/', login_required(views.EditSchemaView.as_view()), name='edit schema'),
 
 
 ]
