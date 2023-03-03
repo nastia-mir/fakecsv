@@ -8,7 +8,6 @@ class Columns:
             order_exists = SchemaColumn.objects.get(schema=schema, order=new_col_order)
             previous_columns = list(SchemaColumn.objects.filter(schema=schema, order__gte=new_col_order))
             for column in previous_columns:
-                print(column.order)
                 column.order = column.order + 1
                 column.save()
         except:

@@ -99,4 +99,17 @@ class NewSchemaView(ProcessFormView):
             return redirect('new schema')
 
 
+class DeleteColumnView(View):
+    def get(self, request, pk):
+        column = SchemaColumn.objects.get(id=pk)
+        deleted_order = column.order
+        next_columns = list(SchemaColumn.objects.filter(schema=column.schema, order__gte=deleted_order))
+        for column in next_columns:
+            column.order = column.order - 1
+            column.save()
+        column.delete()
+        return redirect('new schema')
+
+
+
 
