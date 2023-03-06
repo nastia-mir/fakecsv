@@ -13,5 +13,6 @@ urlpatterns = [
     path('<pk>/delete/', login_required(views.DeleteSchemaView.as_view()), name='delete schema'),
     path('<pk>/edit/', login_required(views.EditSchemaView.as_view()), name='edit schema'),
 
+    path('<pk>', login_required(views.ShowSchemaView.as_view()), name='show schema'),
 
 ]

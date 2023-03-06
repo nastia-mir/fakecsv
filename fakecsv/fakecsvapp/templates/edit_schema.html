@@ -3,7 +3,7 @@
 
 <h2>New schema</h2>
 
-<form method="POST">
+<form method="POST" action="{% url 'ajax get range' %}">
     {% csrf_token %}
     {{schema_form.as_p}}
     <input class="btn btn-primary" name="create_schema" type="submit" value="Submit"/>
@@ -15,7 +15,7 @@
 {% if columns %}
 {% for column in columns %}
 
-<p>
+<p class="">
     Name {{column.name}}, Type {{column.type}}, Order: {{column.order}}
     <a href="{% url 'delete column' column.id %}">Delete</a>
 <p>
@@ -25,12 +25,10 @@
 {% endif %}
 
 
-<form method="POST">
+<form method="POST" id="columnForm" novalidate>
     {% csrf_token %}
     {{column_form.as_p}}
     <input class="btn btn-primary" name="add_column" type="submit" value="Add column"/>
 </form>
-
-
 
 {% endblock %}

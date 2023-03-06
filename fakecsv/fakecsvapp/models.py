@@ -45,18 +45,6 @@ class PhoneNumberColumn(models.Model):
         return self.phone_number
 
 
-class IntegerColumn(models.Model):
-    column_name = models.CharField(max_length=150, default='Integer')
-    lower_bound = models.IntegerField()
-    upper_bound = models.IntegerField()
-    integer = models.IntegerField()
-
-    objects = models.Manager()
-
-    def __str__(self):
-        return 'Range: ({},{}), integer: {}'.format(self.lower_bound, self.upper_bound, self.integer)
-
-
 class DateColumn(models.Model):
     column_name = models.CharField(max_length=150, default='Date')
     date = models.DateField(auto_now=False, auto_now_add=False)
@@ -85,13 +73,6 @@ class Schema(models.Model):
 
     is_draft = models.BooleanField(default=True)
 
-    '''full_name_field = models.ManyToManyField(FullNameColumn)
-    email_field = models.ManyToManyField(EmailColumn)
-    domain_name_field = models.ManyToManyField(DomainNameColumn)
-    phone_number_field = models.ManyToManyField(PhoneNumberColumn)
-    integer_field = models.ManyToManyField(IntegerColumn)
-    date_field = models.ManyToManyField(DateColumn)'''
-
     objects = models.Manager()
 
     def __str__(self):
@@ -104,7 +85,6 @@ class SchemaColumn(models.Model):
         ('email', 'Email'),
         ('domain', 'Domain name'),
         ('phone_number', 'Phone number'),
-        ('integer', 'Integer'),
         ('date', 'Date'),
     )
     type = models.CharField(max_length=150, choices=types, blank=False)

@@ -2,9 +2,10 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.contrib import messages
+from django.http import JsonResponse
 
 
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, reverse
 from django.views.generic import View, TemplateView
 from django.views.generic.edit import ProcessFormView
 
@@ -58,7 +59,9 @@ class NewSchemaView(ProcessFormView):
 
     def get(self, request):
         context = {'schema_form': NewSchemaForm(),
-                   'column_form': NewColumnForm()}
+                   'column_form': NewColumnForm(),
+                   'url': reverse('new schema')
+                   }
         draft = cache.get('draft')
         if not draft:
             draft, created = Schema.objects.get_or_create(user=request.user, is_draft=True)
@@ -128,12 +131,14 @@ class EditSchemaView(View):
     template_name = 'edit_schema.html'
 
     def get(self, request, pk):
-        context = {'schema_form': NewSchemaForm(),
-                   'column_form': NewColumnForm()}
         schema = cache.get('schema')
         if not schema:
             schema = Schema.objects.get(id=pk)
             cache.set('schema', schema, 900)
+        context = {'schema_form': NewSchemaForm(),
+                   'column_form': NewColumnForm(),
+                   'url': reverse('edit schema', args={schema.id})
+                   }
         columns = list(SchemaColumn.objects.filter(schema=schema).order_by('order'))
         if len(columns) != 0:
             context['columns'] = columns
@@ -166,14 +171,21 @@ class EditSchemaView(View):
                 column_form.schema = schema
                 column_form.order = Columns.normalise_column_orders(schema, column_form.order)
                 column_form.save()
-                return redirect('new schema')
+                return redirect(reverse('edit schema', args={schema.id}))
             else:
                 messages.error(request, 'Something went wrong with new column.')
-                return redirect('edit schema')
+                return redirect(reverse('edit schema', args={schema.id}))
         else:
             messages.error(request, 'Something went wrong.')
             return redirect('edit schema')
 
+
+class ShowSchemaView(View):
+    def get(self):
+        pass
+
+    def post(self):
+        pass
 
 
 
