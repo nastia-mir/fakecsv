@@ -18,3 +18,7 @@ class NewColumnForm(forms.ModelForm):
     class Meta:
         model = SchemaColumn
         fields = ['name', 'type', 'order']
+
+
+class RowsAmountForm(forms.Form):
+    rows = forms.IntegerField()

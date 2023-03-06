@@ -2,16 +2,15 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.contrib import messages
-from django.http import JsonResponse
 
 
 from django.shortcuts import render, redirect, reverse
 from django.views.generic import View, TemplateView
 from django.views.generic.edit import ProcessFormView
 
-from fakecsvapp.forms import LoginForm, NewSchemaForm, NewColumnForm
-from fakecsvapp.models import Schema, SchemaColumn
-from fakecsvapp.services import Columns
+from fakecsvapp.forms import LoginForm, NewSchemaForm, NewColumnForm, RowsAmountForm
+from fakecsvapp.models import Schema, SchemaColumn, DataSets
+from fakecsvapp.services import Columns, File
 
 
 class LoginView(View):
@@ -181,11 +180,42 @@ class EditSchemaView(View):
 
 
 class ShowSchemaView(View):
-    def get(self):
-        pass
+    def get(self, request, pk):
+        context = {}
+        schema = cache.get('schema')
+        if not schema:
+            schema = Schema.objects.get(id=pk)
+            cache.set('schema', schema, 900)
+        context['schema'] = schema
+        schema_columns = list(SchemaColumn.objects.filter(schema=schema))
+        context['columns'] = zip(schema_columns, range(1, len(schema_columns) + 1))
+        context['form'] = RowsAmountForm()
 
-    def post(self):
-        pass
+        data_sets = list(DataSets.objects.filter(schema=schema))
+        if len(data_sets) != 0:
+            context['data_sets'] = zip(data_sets, range(1, len(data_sets) + 1))
+        else:
+            context['data_sets'] = None
+        return render(request, 'show_schema.html', context)
+
+    def post(self, request, pk):
+        schema = cache.get('schema')
+        if not schema:
+            schema = Schema.objects.get(id=pk)
+            cache.set('schema', schema, 900)
+
+        form = RowsAmountForm(request.POST)
+        if form.is_valid():
+            rows = form.cleaned_data['rows']
+            dataset = DataSets.objects.create(rows_amount=rows, schema=schema)
+            File.generate_csv(dataset)
+            file = f'{dataset.schema.title}{dataset.id}.csv'
+            dataset.csv_file = file
+            dataset.save()
+            return redirect(reverse('show schema', args={pk}))
+        else:
+            messages.error(request, 'Enter valid number.')
+            return redirect(reverse('show schema', args={pk}))
 
 
 

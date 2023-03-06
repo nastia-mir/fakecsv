@@ -1,9 +1,10 @@
 {% extends 'main.html' %}
 {% block content %}
 
-<h2>Data schemas</h2>
-
-<a href="{% url 'new schema' %}">New schema</a>
+<p>
+  <h2>Data schemas</h2>
+  <a href="{% url 'new schema' %}" class="btn btn-success">New schema</a>
+</p>
 
 <table>
 <tr>
@@ -15,11 +16,11 @@
 {% for schema,i in schemas %}
 <tr>
   <th> {{ i }}</th>
-  <th> {{ schema.title }}</th>
+  <th> <a href="{% url 'show schema' schema.id %}"> {{schema.title}} </a></th>
   <th> {{ schema.date_modified }}</th>
   <th>
       <p>
-        <a href="{% url 'edit schema' schema.id %}">Edit schema</a>
+        <a href="{% url 'edit schema' schema.id %}">Edit scheme</a>
       </p>
     <p>
       <a href="{% url 'delete schema' schema.id %}">Delete</a>

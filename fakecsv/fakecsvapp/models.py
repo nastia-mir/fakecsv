@@ -1,58 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.core.validators import RegexValidator
-
-
-class FullNameColumn(models.Model):
-    column_name = models.CharField(max_length=150, default='Full name')
-    first_name = models.CharField(max_length=150)
-    last_name = models.CharField(max_length=150)
-
-    objects = models.Manager()
-
-    def __str__(self):
-        return '{} {}'.format(self.first_name, self.last_name)
-
-
-class EmailColumn(models.Model):
-    column_name = models.CharField(max_length=150, default='Email')
-    email = models.EmailField(max_length=150)
-
-    objects = models.Manager()
-
-    def __str__(self):
-        return self.email
-
-
-class DomainNameColumn(models.Model):
-    column_name = models.CharField(max_length=150, default='Domain name')
-    domain_name = models.CharField(max_length=150)
-
-    objects = models.Manager()
-
-    def __str__(self):
-        return 'www.{}.com'.format(self.domain_name)
-
-
-class PhoneNumberColumn(models.Model):
-    column_name = models.CharField(max_length=150, default='Phone number')
-    phone_regex = RegexValidator(regex=r'^(\+\d{16}')
-    phone_number = models.CharField(validators=[phone_regex], max_length=17)
-
-    objects = models.Manager()
-
-    def __str__(self):
-        return self.phone_number
-
-
-class DateColumn(models.Model):
-    column_name = models.CharField(max_length=150, default='Date')
-    date = models.DateField(auto_now=False, auto_now_add=False)
-
-    objects = models.Manager()
-
-    def __str__(self):
-        return self.date
 
 
 class Schema(models.Model):
@@ -96,3 +43,20 @@ class SchemaColumn(models.Model):
 
     def __str__(self):
         return 'Type: {}, name: {}'.format(self.get_type_display(), self.name)
+
+
+class DataSets(models.Model):
+    schema = models.ForeignKey(Schema, on_delete=models.CASCADE, related_name='schema_csv')
+    rows_amount = models.IntegerField(blank=False)
+    csv_file = models.FileField(upload_to='media/', max_length=254, null=True, blank=True)
+    status_options = (
+        ('processing', 'Processing'),
+        ('ready', 'Ready')
+    )
+    status = models.CharField(max_length=100, choices=status_options, default='processing')
+    created = models.DateField(auto_now=True)
+
+    objects = models.Manager()
+
+    def __str__(self):
+        return 'Schema {}, file {}'.format(self.schema, self.csv_file)

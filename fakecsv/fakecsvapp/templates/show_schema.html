@@ -1,0 +1,38 @@
+{% extends 'main.html' %}
+{% block content %}
+
+<p>
+    <h2>Sample schema</h2>
+    <a href="{% url 'edit schema' schema.id %}">Edit scheme</a>
+</p>
+
+<table>
+<tr>
+  <th>#</th>
+  <th>Column name</th>
+  <th>Column type</th>
+</tr>
+{% for column,i in columns %}
+<tr>
+  <th> {{ i }}</th>
+  <th> {{column.name}} </a></th>
+  <th> {{column.get_type_display}}</th>
+</tr>
+{% endfor %}
+</table>
+
+
+<p>
+    <h2>Data sets</h2>
+
+    <form method="POST">
+        {% csrf_token %}
+        {{form}}
+        <input class="btn btn-success" name="generate_data" type="submit" value="Generate data"/>
+    </form>
+
+</p>
+
+{% include 'datasets_table.html' %}
+
+{% endblock %}
