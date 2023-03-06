@@ -11,6 +11,7 @@ from django.views.generic.edit import ProcessFormView
 from fakecsvapp.forms import LoginForm, NewSchemaForm, NewColumnForm, RowsAmountForm
 from fakecsvapp.models import Schema, SchemaColumn, DataSets
 from fakecsvapp.services import Columns, File
+from fakecsvapp.tasks import generate_cvs
 
 
 class LoginView(View):
@@ -208,9 +209,14 @@ class ShowSchemaView(View):
         if form.is_valid():
             rows = form.cleaned_data['rows']
             dataset = DataSets.objects.create(rows_amount=rows, schema=schema)
-            File.generate_csv(dataset)
+            generate_cvs.delay(dataset.id)
+            # File.generate_csv(dataset)
+            # file = f'{dataset.schema.title}{dataset.id}.csv'
+            # dataset.csv_file = file
+            # dataset.save()
             file = f'{dataset.schema.title}{dataset.id}.csv'
             dataset.csv_file = file
+            dataset.status = 'ready'
             dataset.save()
             return redirect(reverse('show schema', args={pk}))
         else:
@@ -218,4 +224,18 @@ class ShowSchemaView(View):
             return redirect(reverse('show schema', args={pk}))
 
 
+def update_dataset_status(request, pk):
+    schema = cache.get('schema')
+    if not schema:
+        schema = Schema.objects.get(id=pk)
+        cache.set('schema', schema, 900)
+
+    dataset = DataSets.objects.get(schema=schema, status='processing').last()
+    dataset.status = 'ready'
+    dataset.save()
+
+
+    datasets = list(DataSets.objects.filter(schema=schema))
+    context = {'data_sets': zip(datasets, range(1, len(datasets) + 1))}
+    return render(request, 'dataset_table.html', context)
 

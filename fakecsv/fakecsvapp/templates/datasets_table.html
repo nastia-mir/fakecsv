@@ -1,19 +1,19 @@
 {% if data_sets %}
 
-<table>
+<table class="datasetsTable" action="{% url 'ajax dataset status' schema.id %}">
 <tr>
   <th>#</th>
   <th>Created</th>
   <th>Status</th>
   <th>Actions</th>
 </tr>
-{% for data_set,i in data_sets %}
-<tr>
+{% for datasets,i in data_sets %}
+<tr id="dataset-table">
   <th> {{ i }}</th>
-  <th> {{data_set.created}} </th>
-  <th> {{data_set.get_status_display}}</th>
+  <th> {{datasets.created}} </th>
+  <th> <p class="btn btn-secondary">{{datasets.get_status_display}}</p></th>
   <th>
-      {% if data_set.status == 'ready' %}
+      {% if datasets.status == 'ready' %}
       Download
       {% endif %}
   </th>

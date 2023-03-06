@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'fakecsvapp',
     'bootstrap5',
+    'django_celery_beat'
 ]
 
 MIDDLEWARE = [
@@ -39,7 +40,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'fakecsv.urls'
+ROOT_URLCONF = 'fakecsvproject.urls'
 
 TEMPLATES = [
     {
@@ -57,7 +58,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'fakecsv.wsgi.application'
+WSGI_APPLICATION = 'fakecsvproject.wsgi.application'
 
 
 # Database
@@ -121,3 +122,9 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # Default primary key field type
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Celery configs
+
+CELERY_BROKER_URL = 'pyamqp://localhost'
+CELERY_RESULT_BACKEND = 'rpc://localhost'
+
