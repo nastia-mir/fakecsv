@@ -67,7 +67,9 @@ class File:
         for column in columns:
             column_dict[column.type] = column.name
 
-        with open('fakecsv/media/{}{}.csv'.format(dataset.schema.title, dataset.id), 'w') as csv_file:
+        path = pathlib.Path().resolve()
+
+        with open(str(path) + '/media/{}{}.csv'.format(dataset.schema.title, dataset.id), 'w') as csv_file:
             writer = csv.writer(csv_file, delimiter=dataset.schema.separator, quotechar=dataset.schema.string_character)
             row_list = [list(column_dict.values())]
             while len(row_list) < rows + 1:

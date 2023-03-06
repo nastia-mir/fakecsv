@@ -3,7 +3,6 @@ from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.contrib import messages
 
-
 from django.shortcuts import render, redirect, reverse
 from django.views.generic import View, TemplateView
 from django.views.generic.edit import ProcessFormView
@@ -214,6 +213,7 @@ class ShowSchemaView(View):
             # file = f'{dataset.schema.title}{dataset.id}.csv'
             # dataset.csv_file = file
             # dataset.save()
+
             file = f'{dataset.schema.title}{dataset.id}.csv'
             dataset.csv_file = file
             dataset.status = 'ready'
