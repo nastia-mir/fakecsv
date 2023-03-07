@@ -108,21 +108,27 @@ class NewSchemaView(ProcessFormView):
 
 class DeleteColumnView(View):
     def get(self, request, pk):
-        column = SchemaColumn.objects.get(id=pk)
-        deleted_order = column.order
-        next_columns = list(SchemaColumn.objects.filter(schema=column.schema, order__gte=deleted_order))
-        for column in next_columns:
-            column.order = column.order - 1
-            column.save()
-        column.delete()
-        return redirect('new schema')
+        try:
+            column = SchemaColumn.objects.get(id=pk)
+            deleted_order = column.order
+            next_columns = list(SchemaColumn.objects.filter(schema=column.schema, order__gte=deleted_order))
+            for column in next_columns:
+                column.order = column.order - 1
+                column.save()
+            column.delete()
+            return redirect('new schema')
+        except:
+            return redirect('new schema')
 
 
 class DeleteSchemaView(View):
     def get(self, request, pk):
-        schema = Schema.objects.get(id=pk)
-        schema.delete()
-        return redirect('home')
+        try:
+            schema = Schema.objects.get(id=pk)
+            schema.delete()
+            return redirect('home')
+        except:
+            return redirect('home')
 
 
 class EditSchemaView(View):
@@ -131,7 +137,10 @@ class EditSchemaView(View):
     def get(self, request, pk):
         schema = cache.get('schema')
         if not schema:
-            schema = Schema.objects.get(id=pk)
+            try:
+                schema = Schema.objects.get(id=pk)
+            except:
+                return redirect('home')
             cache.set('schema', schema, 900)
         context = {'schema_form': NewSchemaForm(),
                    'column_form': NewColumnForm(),
@@ -183,7 +192,10 @@ class ShowSchemaView(View):
         context = {}
         schema = cache.get('schema')
         if not schema:
-            schema = Schema.objects.get(id=pk)
+            try:
+                schema = Schema.objects.get(id=pk)
+            except:
+                return redirect('home')
             cache.set('schema', schema, 900)
         context['schema'] = schema
         schema_columns = list(SchemaColumn.objects.filter(schema=schema))
@@ -200,7 +212,10 @@ class ShowSchemaView(View):
     def post(self, request, pk):
         schema = cache.get('schema')
         if not schema:
-            schema = Schema.objects.get(id=pk)
+            try:
+                schema = Schema.objects.get(id=pk)
+            except:
+                return redirect('home')
             cache.set('schema', schema, 900)
 
         form = RowsAmountForm(request.POST)

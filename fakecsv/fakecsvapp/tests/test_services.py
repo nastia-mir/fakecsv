@@ -15,7 +15,6 @@ class TestColumns(TestCase):
         self.user = User.objects.create(username='username', password='password')
         self.schema = Schema.objects.create(user=self.user)
         self.column = SchemaColumn.objects.create(type='full_name', name='name', schema=self.schema)
-
         return super().setUp()
 
     def test_normalise_column_orders_correct_order(self):
