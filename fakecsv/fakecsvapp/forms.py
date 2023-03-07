@@ -4,8 +4,8 @@ from fakecsvapp.models import Schema, SchemaColumn
 
 
 class LoginForm(forms.Form):
-    username = forms.CharField()
-    password = forms.CharField(widget=forms.PasswordInput)
+    username = forms.CharField(label="")
+    password = forms.CharField(label="", widget=forms.PasswordInput)
 
 
 class NewSchemaForm(forms.ModelForm):
