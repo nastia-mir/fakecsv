@@ -17,7 +17,6 @@ class NewSchemaForm(forms.ModelForm):
             'title': forms.TextInput(attrs={'class': 'form-control'}),
             'separator': forms.Select(attrs={'class': 'form-control'}),
             'string_character': forms.Select(attrs={'class': 'form-control'})
-
         }
 
 
@@ -30,7 +29,6 @@ class NewColumnForm(forms.ModelForm):
             'name': forms.TextInput(attrs={'class': 'form-control'}),
             'type': forms.Select(attrs={'class': 'form-control'}),
             'order': forms.TextInput(attrs={'class': 'form-control'})
-
         }
 
 

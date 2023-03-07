@@ -29,11 +29,14 @@ class Columns:
 class File:
     @classmethod
     def get_full_name(cls):
-        names = ['Jonathan', 'Martin', 'Timothy', 'Sasha', 'Elias', 'Georgie', 'Basira', 'Alice', 'Melanie', 'Jurgen',
-                 'Julia', 'Gertrude', 'Gerard', 'Agnes', 'Annabelle', 'Jane', 'Jonah', 'Michael', 'Peter', 'Trevor']
-        surnames = ['Sims', 'Blackwood', 'Stoker', 'James', 'Bouchard', 'Barker', 'Hussain', 'Tonner', 'King', 'Leitner',
-                    'Montauk', 'Robinson', 'Keay', 'Montague', 'Cane', 'Prentiss', 'Magnus', 'Crew', 'Lukas', 'Herbert']
-        full_name = random.sample(set(itertools.product(names, surnames)), 1)
+        first_names = ['Jonathan', 'Martin', 'Timothy', 'Sasha', 'Elias', 'Georgie', 'Basira', 'Alice', 'Melanie',
+                       'Jurgen', 'Julia', 'Gertrude', 'Gerard', 'Agnes', 'Annabelle', 'Jane', 'Jonah', 'Michael',
+                       'Peter', 'Trevor']
+        last_names = ['Sims', 'Blackwood', 'Stoker', 'James', 'Bouchard', 'Barker', 'Hussain', 'Tonner', 'King',
+                      'Leitner', 'Montauk', 'Robinson', 'Keay', 'Montague', 'Cane', 'Prentiss', 'Magnus', 'Crew',
+                      'Lukas', 'Herbert']
+
+        full_name = (random.choice(first_names), random.choice(last_names))
         return '{} {}'.format(full_name[0], full_name[1])
 
     @classmethod
