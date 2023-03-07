@@ -1,33 +1,35 @@
 {% extends 'main.html' %}
 {% block content %}
 
-<p>
-  <h2>Data schemas</h2>
-  <a href="{% url 'new schema' %}" class="btn btn-success">New schema</a>
-</p>
+<div class="row">
+  <div class="col">
+    <h2>Data schemas</h2>
+  </div>
+  <div class="col">
+    <a href="{% url 'new schema' %}" class="btn btn-success">New schema</a>
+  </div>
+</div>
 
-<table>
-<tr>
-  <th>#</th>
-  <th>Title</th>
-  <th>Modified</th>
-  <th>Actions</th>
-</tr>
-{% for schema,i in schemas %}
-<tr>
-  <th> {{ i }}</th>
-  <th> <a href="{% url 'show schema' schema.id %}"> {{schema.title}} </a></th>
-  <th> {{ schema.date_modified }}</th>
-  <th>
-      <p>
-        <a href="{% url 'edit schema' schema.id %}">Edit scheme</a>
-      </p>
-    <p>
-      <a href="{% url 'delete schema' schema.id %}">Delete</a>
-    </p>
-  </th>
-</tr>
-{% endfor %}
+<table class="table table-bordered" style="width: 980px;">
+    <tr style="width: 980px; height: 50px;">
+        <th scope="col" style="width: 115.81px;">#</th>
+        <th scope="col">Title</th>
+        <th scope="col">Modified</th>
+        <th scope="col">Actions</th>
+    </tr>
+    {% for schema,i in schemas %}
+    <tr style="width: 980px; height: 50px;">
+        <th scope="row" style="width: 115.81px;"> {{ i }}</th>
+        <th><a href="{% url 'show schema' schema.id %}" class="text-decoration-none"> {{schema.title}} </a></th>
+        <th> {{ schema.date_modified }}</th>
+        <th>
+            <p>
+                <a href="{% url 'edit schema' schema.id %}" class="text-decoration-none">Edit scheme</a>
+                <a href="{% url 'delete schema' schema.id %}" class="text-decoration-none text-danger">Delete</a>
+            </p>
+        </th>
+    </tr>
+    {% endfor %}
 </table>
 
 {% endblock %}

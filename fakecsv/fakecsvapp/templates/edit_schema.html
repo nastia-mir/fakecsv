@@ -3,11 +3,19 @@
 
 <h2>New schema</h2>
 
-<form method="POST" >
-    {% csrf_token %}
-    {{schema_form.as_p}}
-    <input class="btn btn-primary" name="create_schema" type="submit" value="Submit"/>
-</form>
+<div class="mb-3">
+    <form method="POST">
+        <div class="row">
+            <div class="col">
+                {% csrf_token %}
+                {{schema_form.as_p}}
+            </div>
+            <div class="col">
+                <input class="btn btn-primary" name="create_schema" type="submit" value="Submit"/>
+            </div>
+        </div>
+    </form>
+</div>
 
 
 <h2>Schema columns</h2>
@@ -15,20 +23,56 @@
 {% if columns %}
 {% for column in columns %}
 
-<p class="">
-    Name {{column.name}}, Type {{column.type}}, Order: {{column.order}}
-    <a href="{% url 'delete column' column.id %}">Delete</a>
-<p>
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <label class="form-label">Column name</label>
+            <p class="card justify-content-center p-2 " style="width: 300px; height: 38px;">{{column.name}} </p>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Type</label>
+            <p class="card justify-content-center p-2 " style="width: 300px; height: 38px;">
+                {{column.get_type_display}}</p>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Order</label>
+            <p class="card justify-content-center p-2 " style="width: 300px; height: 38px;">{{column.order}}</p>
+        </div>
+        <div class="col-md-3 justify-content-center">
+            <a href="{% url 'delete column' column.id %}" class="text-decoration-none text-danger">Delete</a>
+        </div>
+    </div>
+</div>
 
 
 {% endfor %}
 {% endif %}
 
+<div class="mb-3 card justify-content-center" style="width: 1106px; height: 171px;">
+    <div class="container">
+        <form method="POST">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-3">
+                    <label class="form-label">Column name</label>
+                    {{column_form.name}}
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Type</label>
+                    {{column_form.type}}
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Order</label>
+                    {{column_form.order}}
+                </div>
+                <div>
+                    <br/>
+                    <input class="btn btn-primary" name="add_column" type="submit" value="Add column"/>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
 
-<form method="POST">
-    {% csrf_token %}
-    {{column_form.as_p}}
-    <input class="btn btn-primary" name="add_column" type="submit" value="Add column"/>
-</form>
 
 {% endblock %}
