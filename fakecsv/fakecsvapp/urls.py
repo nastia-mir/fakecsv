@@ -15,6 +15,4 @@ urlpatterns = [
 
     path('<pk>/datasets', login_required(views.ShowSchemaView.as_view()), name='show schema'),
 
-    path('<pk>/ajax_status/', login_required(views.update_dataset_status), name='ajax dataset status'),
-
 ]

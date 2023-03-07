@@ -6,10 +6,8 @@ import rstr
 import datetime
 import pathlib
 
-from django.core.files import File
+from fakecsvapp.models import SchemaColumn
 
-
-from fakecsvapp.models import Schema, SchemaColumn
 
 class Columns:
     @classmethod
@@ -67,9 +65,7 @@ class File:
         for column in columns:
             column_dict[column.type] = column.name
 
-        path = pathlib.Path().resolve()
-
-        with open(str(path) + '/media/{}{}.csv'.format(dataset.schema.title, dataset.id), 'w') as csv_file:
+        with open('fakecsv/media/{}{}.csv'.format(dataset.schema.title, dataset.id), 'w') as csv_file:
             writer = csv.writer(csv_file, delimiter=dataset.schema.separator, quotechar=dataset.schema.string_character)
             row_list = [list(column_dict.values())]
             while len(row_list) < rows + 1:

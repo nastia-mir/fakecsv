@@ -122,9 +122,3 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # Default primary key field type
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-# Celery configs
-
-CELERY_BROKER_URL = 'pyamqp://localhost'
-CELERY_RESULT_BACKEND = 'rpc://localhost'
-

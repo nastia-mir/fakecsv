@@ -33,12 +33,31 @@
 
 </p>
 
-{% include 'datasets_table.html' %}
+{% if data_sets %}
 
+<table>
+<tr>
+  <th>#</th>
+  <th>Created</th>
+  <th>Status</th>
+  <th>Actions</th>
+</tr>
+{% for dataset,i in data_sets %}
+<tr>
+  <th> {{ i }}</th>
+  <th> {{dataset.created}} </th>
+  <th> <p class="btn btn-success">{{dataset.get_status_display}}</p></th>
+  <th>
+      {% if dataset.status == 'ready' %}
+      <a href="{{dataset.csv_file.url}}" download> Download</a>
+      {% endif %}
+  </th>
+</tr>
+{% endfor %}
+</table>
 
-
-
-
-
+{% else %}
+<p>You do not have data sets yet.</p>
+{% endif %}
 
 {% endblock %}

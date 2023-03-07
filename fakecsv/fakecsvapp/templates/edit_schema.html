@@ -3,7 +3,7 @@
 
 <h2>New schema</h2>
 
-<form method="POST" action="{% url 'ajax get range' %}">
+<form method="POST" >
     {% csrf_token %}
     {{schema_form.as_p}}
     <input class="btn btn-primary" name="create_schema" type="submit" value="Submit"/>
@@ -25,7 +25,7 @@
 {% endif %}
 
 
-<form method="POST" id="columnForm" novalidate>
+<form method="POST">
     {% csrf_token %}
     {{column_form.as_p}}
     <input class="btn btn-primary" name="add_column" type="submit" value="Add column"/>
