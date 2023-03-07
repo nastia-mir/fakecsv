@@ -1,10 +1,8 @@
 import random
-import itertools
 import string
 import csv
 import rstr
 import datetime
-import pathlib
 
 from fakecsvapp.models import SchemaColumn
 
