@@ -63,7 +63,7 @@ class NewSchemaView(ProcessFormView):
         draft = cache.get('draft')
         if not draft:
             draft, created = Schema.objects.get_or_create(user=request.user, is_draft=True)
-            cache.set('draft', draft, 900)
+            cache.set('draft', draft, 30)
         columns = list(SchemaColumn.objects.filter(schema=draft).order_by('order'))
         if len(columns) != 0:
             context['columns'] = columns
@@ -75,7 +75,7 @@ class NewSchemaView(ProcessFormView):
         schema = cache.get('draft')
         if not schema:
             schema = Schema.objects.get(user=request.user, is_draft=True)
-            cache.set('draft', schema, 900)
+            cache.set('draft', schema, 30)
         if 'create_schema' in request.POST:
             form = NewSchemaForm(request.POST)
             if form.is_valid():
@@ -110,13 +110,17 @@ class DeleteColumnView(View):
     def get(self, request, pk):
         try:
             column = SchemaColumn.objects.get(id=pk)
+            column.delete()
             deleted_order = column.order
             next_columns = list(SchemaColumn.objects.filter(schema=column.schema, order__gte=deleted_order))
             for column in next_columns:
                 column.order = column.order - 1
                 column.save()
-            column.delete()
-            return redirect('new schema')
+
+            if column.schema.is_draft:
+                return redirect('new schema')
+            else:
+                return redirect(reverse('edit schema', args={column.schema.id}))
         except:
             return redirect('new schema')
 
@@ -135,16 +139,14 @@ class EditSchemaView(View):
     template_name = 'edit_schema.html'
 
     def get(self, request, pk):
-        schema = cache.get('schema')
-        if not schema:
-            try:
-                schema = Schema.objects.get(id=pk)
-            except:
-                return redirect('home')
-            cache.set('schema', schema, 900)
+        try:
+            schema = Schema.objects.get(id=pk)
+        except:
+            return redirect('home')
+        cache.set('schema', schema, 30)
+
         context = {'schema_form': NewSchemaForm(instance=schema),
-                   'column_form': NewColumnForm(),
-                   'url': reverse('edit schema', args={schema.id})
+                   'column_form': NewColumnForm()
                    }
         columns = list(SchemaColumn.objects.filter(schema=schema).order_by('order'))
         if len(columns) != 0:
@@ -157,7 +159,7 @@ class EditSchemaView(View):
         schema = cache.get('schema')
         if not schema:
             schema = Schema.objects.get(id=pk)
-            cache.set('draft', schema, 900)
+            cache.set('schema', schema, 30)
         if 'create_schema' in request.POST:
             form = NewSchemaForm(request.POST)
             if form.is_valid():
