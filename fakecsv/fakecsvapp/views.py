@@ -142,7 +142,7 @@ class EditSchemaView(View):
             except:
                 return redirect('home')
             cache.set('schema', schema, 900)
-        context = {'schema_form': NewSchemaForm(),
+        context = {'schema_form': NewSchemaForm(instance=schema),
                    'column_form': NewColumnForm(),
                    'url': reverse('edit schema', args={schema.id})
                    }
